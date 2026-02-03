@@ -280,6 +280,21 @@ p{
   background: linear-gradient(135deg, rgba(225,29,72,0.10), rgba(15,118,110,0.08));
 }
 
+/* planner controls */
+.planControls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+  align-items:center;
+}
+.planLabel{
+  font-weight:900;
+  font-size:13px;
+  color: rgba(15,23,42,0.55);
+  width:100%;
+}
+
 /* envelope */
 .envelopeWrap{
   display:grid;
@@ -606,9 +621,12 @@ p{
         <h2>Our Date Options for the Valentine's Week 📅</h2>
         <p class="sub">Select a plan to see what options we have for the week. Let's decide together what all we wanna do</p>
 
+        <!-- NEW: live plan board -->
+       
+
         <div class="accordion">
 
-          <details class="acc">
+          <details class="acc" data-activity="Roger Williams Park">
             <summary>
               <span class="accTitle">📸 🌳 Roger Williams Park</span>
               <span class="accHint">tap to open</span>
@@ -622,10 +640,11 @@ p{
                 <li>Pick a “best picture” and make it our new wallpaper</li>
                 <li>Dinner together</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Bowling or Skating night">
             <summary>
               <span class="accTitle">🎳 Bowling or ⛸️ Skating night</span>
               <span class="accHint">tap to open</span>
@@ -638,10 +657,11 @@ p{
                 <li>Winner chooses dessert</li>
                 <li>Loser chooses the next date idea</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Thrifting & Shopping Stroll in Providence">
             <summary>
               <span class="accTitle"> 🛒 Thrifiting & 🛍️ Shopping Stroll in Providence</span>
               <span class="accHint">tap to open</span>
@@ -654,10 +674,11 @@ p{
                 <li>Dress each other up in trial rooms</li>
                 <li>We come home try the clothes on for each other</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Go around in Newport">
             <summary>
               <span class="accTitle"> 🌊 🛥️ Go around in Newport</span>
               <span class="accHint">tap to open</span>
@@ -671,10 +692,11 @@ p{
                 <li>Visit the Cliff Walk</li>
                 <li>Sunset at Castle Hill light house</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Boston Day Trip">
             <summary>
               <span class="accTitle">🚆 🍣 Boston Day Trip</span>
               <span class="accHint">tap to open</span>
@@ -688,10 +710,11 @@ p{
                 <li>Evening Drink and Dessert (Towel Cake) at Kyomatcha</li>
                 <li>Take the train back</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Cozy Home Dinner date & Movie night">
             <summary>
               <span class="accTitle">🍽️ Cozy Home Dinner date & 🎬 Movie night</span>
               <span class="accHint">tap to open</span>
@@ -706,10 +729,11 @@ p{
                 <li>Mid-movie cuddle break</li>
                 <li>Walk or drive after dinner for dessert</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Morning Hike and Breakfast at Krispy Kreme">
             <summary>
               <span class="accTitle"> ☀️🏞 Morning Hike and Breakfast at 🍩 Krispy Kreme</span>
               <span class="accHint">tap to open</span>
@@ -725,10 +749,11 @@ p{
                 <li>Leave by 10:30am and back home by 11:45am</li>
                 <li>Carry-on with the rest of your days</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
 
-          <details class="acc">
+          <details class="acc" data-activity="Friday Paint Night and Stargazing">
             <summary>
               <span class="accTitle">🎨 Friday Paint Night and 🌟 Stargazing</span>
               <span class="accHint">tap to open</span>
@@ -743,8 +768,10 @@ p{
                 <li>Go stargazing at Frosty Drew if weather's clear</li>
                 <li>Drive Thru Snacks while coming back</li>
               </ul>
+              <!-- controls injected by JS -->
             </div>
           </details>
+
         </div>
       </div>
 
@@ -823,9 +850,6 @@ p{
               <span class="note n3">💌</span>
               <span class="note n4">💌</span>
               <span class="note n5">💌</span>
-              <span class="note n6">💌</span>
-              <span class="note n7">💌</span>
-              <span class="note n8">💌</span>
             </div>
 
             <div class="jarLid"></div>
@@ -1029,6 +1053,161 @@ jar.addEventListener("keydown", (e)=> {
 });
 pickPromiseBtn.addEventListener("click", pickPromise);
 resetPromisesBtn.addEventListener("click", resetJar);
+
+/* 
+   SHARED PLANNER (Google Apps Script URL) */
+
+// Your web app URL
+const API_URL = "https://script.google.com/macros/s/AKfycbxXThPTOJh5_U8nAH_hCpU8WrSY_revwPPbkQ3TsBpJYXc2CKbUw1-fCHae4PpCWfJd/exec";
+
+
+const SECRET = "sungodnika";
+
+// Who is saving (for the email notification + board)
+const WHO = HER_NAME;
+
+// Edit these to whatever week you want
+const DATE_OPTIONS = [
+  "Feb 05", "Feb 06", "Feb 07", "Feb 08", "Feb 09", "Feb 10", "Feb 11","Feb 12", "Feb 13", "Feb 14", "Feb 15"
+];
+
+// Injects date/time/save controls into every activity
+function injectPlannerControls(){
+  document.querySelectorAll("#dateIdeas details.acc").forEach((details, i) => {
+    const activity = details.getAttribute("data-activity") || "Date";
+    const body = details.querySelector(".accBody");
+    if(!body) return;
+
+    // prevent duplicate injection
+    if (body.querySelector(".planControls")) return;
+
+    const dateId = `datePick_${i}`;
+    const timeId = `timePick_${i}`;
+    const noteId = `notePick_${i}`;
+
+    const wrap = document.createElement("div");
+    wrap.className = "planControls";
+    wrap.innerHTML = `
+      <div class="planLabel">Pick a date for this activity and hit Save:</div>
+
+      <select class="pillBtn" id="${dateId}" style="padding:10px 14px;">
+        <option value="">Pick a date…</option>
+        ${DATE_OPTIONS.map(d => `<option value="${d}">${d}</option>`).join("")}
+      </select>
+
+      <input class="pillBtn" id="${timeId}" placeholder="Time (optional)"
+             style="padding:10px 14px; min-width:140px;" />
+
+      <input class="pillBtn" id="${noteId}" placeholder="Notes (optional)"
+             style="padding:10px 14px; min-width:200px;" />
+
+      <button class="pillBtn" type="button"
+        data-activity="${activity}" data-date="${dateId}" data-time="${timeId}" data-note="${noteId}">
+        Save
+      </button>
+    `;
+
+    wrap.querySelector("button").addEventListener("click", async (e) => {
+      const btn = e.currentTarget;
+      const a = btn.getAttribute("data-activity");
+      const date = document.getElementById(btn.getAttribute("data-date")).value;
+      const time = document.getElementById(btn.getAttribute("data-time")).value;
+      const notes = document.getElementById(btn.getAttribute("data-note")).value;
+
+      if (!date){
+        showToast("Pick a date first.");
+        return;
+      }
+
+      await savePlan({ activity: a, date, time, notes });
+      await loadPlans();
+    });
+
+    body.appendChild(wrap);
+  });
+}
+
+async function savePlan({activity, date, time, notes}){
+  const payload = {
+    secret: SECRET,
+    who: WHO,
+    activity,
+    date,
+    time,
+    notes
+  };
+
+  try{
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || "Failed");
+
+    showToast("Saved.");
+  }catch(err){
+    console.error(err);
+    showToast("Could not save. Check Apps Script permissions/secret.");
+  }
+}
+
+function renderPlans(rows){
+  const el = document.getElementById("planList");
+  if(!el) return;
+
+  if(!rows || rows.length === 0){
+    el.innerHTML = `
+      <div style="padding:10px 12px; border-radius:14px;
+                  background: rgba(255,255,255,0.72);
+                  border: 1px solid rgba(15,118,110,0.12);">
+        No updates yet. Save a date to start.
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = rows.slice(0, 10).map(r => {
+    const t = r.time ? ` at ${r.time}` : "";
+    const n = r.notes ? `<div style="opacity:.70; margin-top:4px;">Note: ${escapeHtml(r.notes)}</div>` : "";
+    return `
+      <div style="padding:10px 12px; margin:8px 0; border-radius:14px;
+                  background: rgba(255,255,255,0.72);
+                  border: 1px solid rgba(15,118,110,0.12);">
+        <div style="font-weight:950;">${escapeHtml(r.who || "")} → ${escapeHtml(r.activity || "")}</div>
+        <div style="opacity:.78;">${escapeHtml(r.date || "")}${t}</div>
+        ${n}
+      </div>
+    `;
+  }).join("");
+}
+
+function escapeHtml(str){
+  return String(str || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+async function loadPlans(){
+  try{
+    const res = await fetch(API_URL, { method: "GET" });
+    const data = await res.json();
+    if(!data.ok) return;
+    renderPlans(data.rows || []);
+  }catch(err){
+    console.error(err);
+  }
+}
+
+// init planner on load
+window.addEventListener("load", () => {
+  injectPlannerControls();
+  loadPlans();
+  setInterval(loadPlans, 8000); // auto-refresh so you see her updates
+});
 </script>
 </body>
 </html>

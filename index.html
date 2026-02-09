@@ -886,6 +886,9 @@ p{
         <!-- Google Sheet Link -->
         <div class="footerNote" style="margin-top:10px;">
           Planner: <a id="sheetLink" href="#" target="_blank" rel="noopener noreferrer">View here</a>
+          &nbsp;|&nbsp;
+          <a id="openCalLink" href="#" target="_blank" rel="noopener noreferrer">Open shared calendar</a>
+          
         </div>
       </div>
 
@@ -1220,6 +1223,8 @@ resetPromisesBtn.addEventListener("click", resetJar);
 
 /* 
    SHARED PLANNER (Google Apps Script URL) */
+//Shared Calender ID:
+const SHARED_CAL_URL = "https://calendar.google.com/calendar/u/0?cid=Zjk0ZmY3OTgwMDc0OTU2OTI2YzIyZTBmZGVkYmZiMDZiYjJmZmNhOWE2OWYzM2VmNDgyZDllZWVmMDMzOGFjZUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t";
 
 // Your web app URL
 const API_URL = "https://script.google.com/macros/s/AKfycbxXThPTOJh5_U8nAH_hCpU8WrSY_revwPPbkQ3TsBpJYXc2CKbUw1-fCHae4PpCWfJd/exec";
@@ -1452,8 +1457,6 @@ async function loadPlans(){
     console.error(err);
   }
 }
-
-// init planner on load
 window.addEventListener("load", () => {
   injectPlannerControls();
   loadPlans();
@@ -1464,7 +1467,14 @@ window.addEventListener("load", () => {
   if (sheetLink && SHEET_URL && !SHEET_URL.includes("PASTE_")){
     sheetLink.href = SHEET_URL;
   }
+
+  // set shared calendar link
+  const openCalLink = document.getElementById("openCalLink");
+  if (openCalLink){
+    openCalLink.href = SHARED_CAL_URL;
+  }
 });
+
 </script>
 </body>
 </html>

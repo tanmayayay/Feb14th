@@ -295,6 +295,28 @@ p{
   width:100%;
 }
 
+/* Planned marker */
+.acc.planned summary{
+  background: linear-gradient(135deg, rgba(15,118,110,0.14), rgba(167,196,177,0.10));
+}
+.acc.planned{
+  border-color: rgba(15,118,110,0.28);
+  box-shadow: 0 16px 34px rgba(2,44,34,0.12);
+}
+.planStatus{
+  font-weight: 950;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,118,110,0.18);
+  background: rgba(15,118,110,0.10);
+  color: rgba(6,95,70,0.85);
+  margin-top: 10px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
 /* envelope */
 .envelopeWrap{
   display:grid;
@@ -456,10 +478,6 @@ p{
   font-size: 12.5px;
 }
 
-@media (max-width: 520px){
-  .memGrid{grid-template-columns:1fr;}
-}
-
 /* Promise Jar */
 .jarWrap{
   display:grid;
@@ -558,10 +576,109 @@ p{
   background: rgba(255,255,255,0.60);
   border: 1px solid rgba(15,118,110,0.14);
 }
+
+/* ===== Passcode Gate ===== */
+.gate{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  backdrop-filter: blur(10px);
+  background:
+    radial-gradient(1200px 800px at 20% 10%, rgba(167,196,177,.85), transparent 60%),
+    radial-gradient(900px 700px at 80% 20%, rgba(15,118,110,.30), transparent 55%),
+    radial-gradient(900px 700px at 50% 95%, rgba(225, 29, 72, 0.10), transparent 60%),
+    linear-gradient(135deg, var(--sage2), rgba(15,118,110,.10));
+}
+.gateCard{
+  width: min(520px, 92vw);
+  border-radius: 22px;
+  background: rgba(255,255,255,0.82);
+  border: 1px solid rgba(15,118,110,.18);
+  box-shadow: 0 22px 80px rgba(2,44,34,.20);
+  padding: 22px 18px;
+  text-align: center;
+}
+.gateBadge{
+  display:inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(15,118,110,.08);
+  border: 1px solid rgba(15,118,110,.16);
+  font-weight: 900;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.gateTitle{
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 950;
+  letter-spacing: -0.01em;
+}
+.gateSub{
+  margin: 0 0 14px;
+  color: rgba(15,23,42,.60);
+  font-weight: 700;
+}
+.gateRow{
+  display:flex;
+  gap: 10px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap: wrap;
+}
+.gateInput{
+  width: min(320px, 86vw);
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,118,110,.18);
+  background: rgba(255,255,255,.85);
+  outline: none;
+  font-weight: 800;
+  color: rgba(15,23,42,.78);
+}
+.gateInput:focus{
+  border-color: rgba(15,118,110,.35);
+  box-shadow: 0 0 0 4px rgba(15,118,110,.10);
+}
+.gateBtn{
+  padding: 12px 18px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 950;
+  color: white;
+  background: linear-gradient(135deg, var(--emerald), var(--emerald2));
+  box-shadow: 0 14px 26px rgba(15,118,110,.35);
+}
+.gateBtn:active{ transform: scale(.99); }
+.gateError{
+  margin-top: 10px;
+  font-weight: 900;
+  color: rgba(225, 29, 72, 0.88);
+}
 </style>
 </head>
 
 <body>
+  <!-- PASSCODE GATE -->
+  <div class="gate" id="gate" aria-hidden="false">
+    <div class="gateCard" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+      <div class="gateBadge">Private</div>
+      <h2 id="gateTitle" class="gateTitle">Enter our passcode</h2>
+      <p class="gateSub">The pass is our safe word (lowercase).</p>
+
+      <div class="gateRow">
+        <input id="gateInput" class="gateInput" type="password" placeholder="Passcode" autocomplete="off" />
+        <button id="gateBtn" class="gateBtn" type="button">Unlock</button>
+      </div>
+
+      <div id="gateError" class="gateError" style="display:none;">Wrong passcode. Try again.</div>
+    </div>
+  </div>
+
   <div class="petals" id="petals"></div>
   <div class="sparkles" id="sparkles"></div>
   <div class="toast" id="toast"></div>
@@ -619,10 +736,7 @@ p{
 
       <div class="section" id="dateIdeas">
         <h2>Our Date Options for the Valentine's Month 📅</h2>
-        <p class="sub"> Tap to see what options we have for the month. Select a plan & Pick the date and time you want or Let's decide together what all we wanna do</p>
-
-        <!--  live plan board -->
-       
+        <p class="sub">Tap to see what options we have for the month. Select a plan & pick the date/time you want (or let's decide together).</p>
 
         <div class="accordion">
 
@@ -657,7 +771,6 @@ p{
                 <li>Winner chooses dessert</li>
                 <li>Loser chooses the next date idea</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
@@ -674,7 +787,6 @@ p{
                 <li>Dress each other up in trial rooms</li>
                 <li>We come home try the clothes on for each other</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
@@ -692,7 +804,6 @@ p{
                 <li>Visit the Cliff Walk</li>
                 <li>Sunset at Castle Hill light house</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
@@ -711,7 +822,6 @@ p{
                 <li>Go to Super-Bowl Watch party (if 8th Feb)</li>
                 <li>Take the train back</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
@@ -730,7 +840,6 @@ p{
                 <li>Mid-movie cuddle break</li>
                 <li>Walk or drive after dinner for dessert</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
@@ -750,7 +859,6 @@ p{
                 <li>Leave by 10:30am and back home by 11:45am</li>
                 <li>Carry-on with the rest of your days</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
@@ -769,10 +877,15 @@ p{
                 <li>Go stargazing at Frosty Drew if weather's clear</li>
                 <li>Drive Thru Snacks while coming back</li>
               </ul>
-              <!-- controls injected by JS -->
             </div>
           </details>
 
+        </div>
+
+
+        <!-- Google Sheet Link -->
+        <div class="footerNote" style="margin-top:10px;">
+          Planner: <a id="sheetLink" href="#" target="_blank" rel="noopener noreferrer">View here</a>
         </div>
       </div>
 
@@ -867,6 +980,56 @@ p{
   </main>
 
 <script>
+/* 
+   PASSCODE GATE 
+ */
+const PAGE_PASSCODE = "kale"; // <-- passcode
+const PASS_KEY = "valentine_unlocked_v1";
+
+const gate = document.getElementById("gate");
+const gateInput = document.getElementById("gateInput");
+const gateBtn = document.getElementById("gateBtn");
+const gateError = document.getElementById("gateError");
+
+function unlockGate(){
+  if (!gate) return;
+  gate.style.display = "none";
+  gate.setAttribute("aria-hidden", "true");
+  // restore normal scroll
+  document.body.style.overflowY = "auto";
+}
+function lockGate(){
+  if (!gate) return;
+  gate.style.display = "grid";
+  gate.setAttribute("aria-hidden", "false");
+  // avoid scrolling behind gate
+  document.body.style.overflow = "hidden";
+}
+function tryUnlock(){
+  const val = (gateInput?.value || "").trim();
+  if (val === PAGE_PASSCODE){
+    sessionStorage.setItem(PASS_KEY, "1"); // unlocked for this tab/session
+    if (gateError) gateError.style.display = "none";
+    unlockGate();
+  } else {
+    if (gateError) gateError.style.display = "block";
+    if (gateInput){
+      gateInput.value = "";
+      gateInput.focus();
+    }
+  }
+}
+if (sessionStorage.getItem(PASS_KEY) === "1"){
+  unlockGate();
+} else {
+  lockGate();
+  setTimeout(() => gateInput?.focus(), 50);
+}
+gateBtn?.addEventListener("click", tryUnlock);
+gateInput?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") tryUnlock();
+});
+
 /* CUSTOMIZATION */
 const HER_NAME = "Nikita";
 document.getElementById("name").textContent = HER_NAME;
@@ -1061,6 +1224,8 @@ resetPromisesBtn.addEventListener("click", resetJar);
 // Your web app URL
 const API_URL = "https://script.google.com/macros/s/AKfycbxXThPTOJh5_U8nAH_hCpU8WrSY_revwPPbkQ3TsBpJYXc2CKbUw1-fCHae4PpCWfJd/exec";
 
+// Put your Google Sheet URL here:
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1SD9oHvoakiAkFyu544JYK7Wv3xnmuiOUAd59h571y3o/edit?usp=sharing";
 
 const SECRET = "sungodnika";
 
@@ -1078,6 +1243,9 @@ function injectPlannerControls(){
     const activity = details.getAttribute("data-activity") || "Date";
     const body = details.querySelector(".accBody");
     if(!body) return;
+
+    // store index so we can pre-fill later
+    details.dataset.planIndex = String(i);
 
     // prevent duplicate injection
     if (body.querySelector(".planControls")) return;
@@ -1103,6 +1271,7 @@ function injectPlannerControls(){
              style="padding:10px 14px; min-width:200px;" />
 
       <button class="pillBtn" type="button"
+        data-index="${i}"
         data-activity="${activity}" data-date="${dateId}" data-time="${timeId}" data-note="${noteId}">
         Save
       </button>
@@ -1192,12 +1361,93 @@ function escapeHtml(str){
     .replaceAll("'", "&#039;");
 }
 
+/* ===== Make saved selections show + mark planned ===== */
+function normalizeActivity(str){
+  return String(str || "").trim().toLowerCase();
+}
+
+function getLatestByActivity(rows){
+  const map = new Map();
+  for (const r of (rows || [])){
+    const key = normalizeActivity(r.activity);
+    if (!key) continue;
+    map.set(key, r); // latest wins
+  }
+  return map;
+}
+
+function markPlannedUI(rows){
+  const latestMap = getLatestByActivity(rows);
+
+  // Optional: disable already-used dates globally (prevents double-book)
+  const usedDates = new Set((rows || []).map(r => (r.date || "").trim()).filter(Boolean));
+
+  document.querySelectorAll("#dateIdeas details.acc").forEach((details) => {
+    const activity = details.getAttribute("data-activity") || "";
+    const key = normalizeActivity(activity);
+    const latest = latestMap.get(key);
+
+    const body = details.querySelector(".accBody");
+    if (!body) return;
+
+    // Ensure status pill exists
+    let status = body.querySelector(".planStatus");
+    if (!status){
+      status = document.createElement("div");
+      status.className = "planStatus";
+      body.appendChild(status);
+    }
+
+    if (!latest){
+      details.classList.remove("planned");
+      status.style.display = "none";
+      const hintEl = details.querySelector(".accHint");
+      if (hintEl) hintEl.textContent = "tap to open";
+      return;
+    }
+
+    details.classList.add("planned");
+    status.style.display = "inline-flex";
+    const t = (latest.time || "").trim();
+    const when = `${(latest.date || "").trim()}${t ? " · " + t : ""}`;
+    status.innerHTML = `✅ <span>Planned: ${escapeHtml(when)}${latest.who ? " (" + escapeHtml(latest.who) + ")" : ""}</span>`;
+
+    // Prefill controls
+    const idx = details.dataset.planIndex;
+    if (idx != null){
+      const dateEl = document.getElementById(`datePick_${idx}`);
+      const timeEl = document.getElementById(`timePick_${idx}`);
+      const noteEl = document.getElementById(`notePick_${idx}`);
+
+      if (dateEl && latest.date) dateEl.value = (latest.date || "").trim();
+      if (timeEl) timeEl.value = (latest.time || "").trim();
+      if (noteEl) noteEl.value = (latest.notes || "").trim();
+
+      // Disable used dates (keep current chosen enabled)
+      if (dateEl){
+        const chosen = (latest.date || "").trim();
+        Array.from(dateEl.options).forEach(opt => {
+          const val = (opt.value || "").trim();
+          if (!val) return;
+          opt.disabled = usedDates.has(val) && val !== chosen;
+        });
+      }
+    }
+
+    const hintEl = details.querySelector(".accHint");
+    if (hintEl) hintEl.textContent = "planned ✓";
+  });
+}
+
 async function loadPlans(){
   try{
     const res = await fetch(API_URL, { method: "GET" });
     const data = await res.json();
     if(!data.ok) return;
-    renderPlans(data.rows || []);
+
+    const rows = data.rows || [];
+    renderPlans(rows);
+    markPlannedUI(rows);
   }catch(err){
     console.error(err);
   }
@@ -1208,6 +1458,12 @@ window.addEventListener("load", () => {
   injectPlannerControls();
   loadPlans();
   setInterval(loadPlans, 8000); // auto-refresh so you see her updates
+
+  // set sheet link
+  const sheetLink = document.getElementById("sheetLink");
+  if (sheetLink && SHEET_URL && !SHEET_URL.includes("PASTE_")){
+    sheetLink.href = SHEET_URL;
+  }
 });
 </script>
 </body>
